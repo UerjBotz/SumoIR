@@ -1,54 +1,41 @@
 #include "SumoIR.h"
 
+int strategy = 0; // estratégia
+
 SumoIR IR;
-
-int strategy = 0; // estrategia
-
-void setup(){
+void setup() {
+    Serial.begin(115200);
   
-  Serial.begin(115200);
-  IR.begin(15); // sensor conectado no pino 15
-
-  // comente se não houver LED
-  IR.setLed(2,HIGH,180); // led no pino 2, acende quando esta HIGH e irá piscar com intervalo de 150ms
-
-  // IR.debug(false); // <- descomente se não quiser debug na serial
-
+    IR.begin(15); // sensor conectado no pino 15
+    IR.setLed(2,HIGH,180); // led no pino 2, acende quando sensor está HIGH e pisca com intervalo de 180ms
+    //^ comente se não houver LED
+  
+    // IR.debug(false); // <- descomente se não quiser debug na serial
 }
 
 void loop() {
-
     IR.update();
 
-    if( IR.available() ){
-      int cmd = IR.read();
-      if( cmd >= 4 && cmd <= 9 ){ // faixa de valores validos ( lembrando que 1, 2 e 3 são eservados pra start, stop e prepare)
-        strategy = cmd;
-      }
+    if (IR.available()) { /* quando o sensor tiver ativado */
+        // salva o número lido pelo sensor, estando ou não de 1 a 3
+        int cmd = IR.read();
+      
+        // substitui a estatégia atual por esse número
+        if (cmd >= 4 && cmd <= 9) strategy = cmd;
     }
 
-    if ( IR.on() ) {
-
-      Serial.println( "running strategy " + String(strategy) );
+    if (IR.on()) { /* código do robô ligado */
+        Serial.println("running strategy " + String(strategy));
       
-      /* codigo do robô ligado */
-      switch( strategy ){
-        case 4:
-          /* estrategy 4 */
-        break;
+        switch (strategy) {
+          default:
+          case 4: /* estratégia 4 */ break;
+          case 5: /* estratégia 5 */ break;
+          case 6: /* estratégia 6 */ break;
 
-        case 5:
-          /* estrategy 5 */
-        break;
-
-        case 6:
-          /* estrategy 6 */
-        break;
-
-        // ... outras estratégias
-      }
-      
-    }else{
-      /* codigo do robô desligado */
+          // ... outras estratégias
+        }
+    } else {
+        /* codigo do robô desligado */
     }
 }
